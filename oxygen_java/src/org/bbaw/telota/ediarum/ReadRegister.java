@@ -28,7 +28,6 @@
  */
 package org.bbaw.telota.ediarum;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -80,30 +79,23 @@ public class ReadRegister {
 			
 			// Wenn es sich um eine URL mit Authentifizierung handelt, ..
 			InputStream is;
-			// Unterscheiden ob indexURI eine URL oder eine lokale Datei ist
-			if (indexURI.indexOf("://") > -1) {
-				if (indexURI.indexOf('@')>-1) {
-					// .. werden die Verbindungsdaten gelesen ..
-					String authString = indexURI.substring(indexURI.indexOf("://")+3, indexURI.indexOf('@'));
-					String webPage = indexURI.substring(0, indexURI.indexOf("://")+3)+indexURI.substring(indexURI.indexOf('@')+1);
-					byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
-					String authStringEnc = new String(authEncBytes);
-					
-					// .. und eine Verbindung mit Login geöffnet.
-					URL url = new URL(webPage);
-					URLConnection urlConnection = url.openConnection();
-					urlConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
-					is = urlConnection.getInputStream();
-				} else {
-					// Im anderen Fall wird direkt eine Verbindung geöffnet.
-					URL url = new URL(indexURI);
-					URLConnection urlConnection = url.openConnection();
-					is = urlConnection.getInputStream();
-				}
-			}
-			else {
-				// indexURI enthält kein :// daher nehmen wir an, daß es sich um eine lokale Datei handelt
-				is = new FileInputStream(indexURI);
+			if (indexURI.indexOf('@')>-1) {
+				// .. werden die Verbindungsdaten gelesen ..
+				String authString = indexURI.substring(indexURI.indexOf("://")+3, indexURI.indexOf('@'));
+				String webPage = indexURI.substring(0, indexURI.indexOf("://")+3)+indexURI.substring(indexURI.indexOf('@')+1);
+				byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
+				String authStringEnc = new String(authEncBytes);
+				
+				// .. und eine Verbindung mit Login geöffnet.
+				URL url = new URL(webPage);
+				URLConnection urlConnection = url.openConnection();
+				urlConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
+				is = urlConnection.getInputStream();
+			} else {
+				// Im anderen Fall wird direkt eine Verbindung geöffnet.
+				URL url = new URL(indexURI);
+				URLConnection urlConnection = url.openConnection();
+				is = urlConnection.getInputStream();
 			}
 			
 			// Dann wird die Datei gelesen.
